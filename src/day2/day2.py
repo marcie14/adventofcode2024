@@ -23,3 +23,5 @@ with open('i:/vscode/adventofcode2024/src/day2/input.csv', newline='') as f:
 
     safe_count = len(data) - not_safe_count
     print(safe_count)
+    
+    # ANS: 269
