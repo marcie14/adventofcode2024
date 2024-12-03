@@ -1,4 +1,5 @@
 import csv
+from collections import Counter
 
 with open('i:/vscode/adventofcode2024/src/day1/input.csv', newline='') as f:
     reader = csv.reader(f)
@@ -27,3 +28,9 @@ with open('i:/vscode/adventofcode2024/src/day1/input.csv', newline='') as f:
     
     
     # ANS: 1873376
+    
+    right_count = Counter(right_list)
+    similarity_score = sum(int(num) * int(right_count[num]) for num in left_list)
+    print(similarity_score)
+    
+    # ANS: 18997088
