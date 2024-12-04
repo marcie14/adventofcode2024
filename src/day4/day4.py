@@ -13,7 +13,8 @@ def find_word_in_grid(grid, word):
                     count += 1
     return count
 
-file_path = 'i:/vscode/adventofcode2024/src/day4/input.txt'
+# file_path = 'i:/vscode/adventofcode2024/src/day4/input.txt'
+file_path = 'input.txt'
 grid = read_input_file(file_path)
 word = "XMAS"
 count = find_word_in_grid(grid, word)
@@ -23,38 +24,51 @@ print(count)
 
 # Part 2
 
-def find_x_mas_in_grid(grid):
-    rows, cols = len(grid), len(grid[0])
+def count_x_mas_patterns(file_path):
+    # Read the word search grid from the input file
+    with open(file_path, 'r') as f:
+        grid = [line.strip() for line in f.readlines()]
+    
+    # Add padding of '.' characters around the grid
+    rows = len(grid)
+    cols = len(grid[0]) if rows > 0 else 0
+    padded_grid = (
+        ["." * (cols + 2)] +  # Top padding
+        ["." + row + "." for row in grid] +  # Side padding for each row
+        ["." * (cols + 2)]  # Bottom padding
+    )
+
+    padded_rows = len(padded_grid)
+    padded_cols = len(padded_grid[0])
     count = 0
-    # Define the relative positions for the X-MAS pattern
-    patterns = [
-        [(0, 0), (1, -1), (2, -2), (1, 1), (2, 2)],  # Diagonal down-right and up-left
-        [(0, 0), (1, 1), (2, 2), (1, -1), (2, -2)],  # Diagonal down-left and up-right
-        [(0, 0), (-1, -1), (-2, -2), (-1, 1), (-2, 2)],  # Diagonal up-right and down-left
-        [(0, 0), (-1, 1), (-2, 2), (-1, -1), (-2, -2)]  # Diagonal up-left and down-right
-    ]
-    for row in range(rows):
-        for col in range(cols):
-            for pattern in patterns:
-                match = True
-                for i, (dr, dc) in enumerate(pattern):
-                    new_row = row + dr
-                    new_col = col + dc
 
-                    # Check if the new position is within the grid boundaries
-                    if not (0 <= new_row < rows and 0 <= new_col < cols):
-                        match = False
-                        break
+    # Helper function to check diagonals for "X-MAS"
+    def is_x_mas(i, j):
+        # Top-left to bottom-right diagonal
+        top_left = padded_grid[i - 1][j - 1:j + 2]
+        bottom_right = padded_grid[i + 1][j - 1:j + 2][::-1]
+        
+        # Top-right to bottom-left diagonal
+        top_right = padded_grid[i - 1][j - 1:j + 2][::-1]
+        bottom_left = padded_grid[i + 1][j - 1:j + 2]
 
-                    # Check if the character matches the expected 'MAS' character
-                    expected_char = 'MAS'[i % 3]
-                    if grid[new_row][new_col] != expected_char:
-                        match = False
-                        break
+        return (
+            (top_left in ("MAS", "SAM") and bottom_right in ("MAS", "SAM")) or
+            (top_right in ("MAS", "SAM") and bottom_left in ("MAS", "SAM"))
+        )
 
-                if match:
-                    count += 1
+    # Iterate through the grid (excluding the padding)
+    for i in range(1, padded_rows - 1):  # Avoid padded edges
+        for j in range(1, padded_cols - 1):
+            if padded_grid[i][j] == 'A' and is_x_mas(i, j):
+                count += 1
+
     return count
 
-x_mas_count = find_x_mas_in_grid(grid)
-print(x_mas_count)
+
+# Path to the input file
+input_file = "input.txt"
+
+# Call the function and print the result
+result = count_x_mas_patterns(input_file)
+print(f"Number of X-MAS patterns found: {result}")
